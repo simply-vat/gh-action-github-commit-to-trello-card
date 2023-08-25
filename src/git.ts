@@ -7,6 +7,8 @@ const gitLogCmd = (count: number): string => `git log -${count} --pretty=format:
 async function getRecentCommits(count: number, urlPrefix: string): Promise<Commit[]> {
     const str = `[${execSync(gitLogCmd(count)).toString().slice(0, -1)}]`
 
+    console.log('Get recent commits: ', str)
+
     const commits = JSON.parse(str) as {
         commit: string
         abbreviated_commit: string
