@@ -10421,6 +10421,7 @@ const gitLogCmd = (count) => `git log -${count} --pretty=format:'{%n  "commit": 
 function getRecentCommits(count, urlPrefix) {
     return __awaiter(this, void 0, void 0, function* () {
         const str = `[${(0, child_process_1.execSync)(gitLogCmd(count)).toString().slice(0, -1)}]`;
+        console.log('Get recent commits: ', str);
         const commits = JSON.parse(str);
         return commits.map((commit) => ({
             author: {
