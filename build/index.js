@@ -10107,7 +10107,7 @@ function run() {
     var _a, _b, _c, _d, _e, _f, _g;
     return __awaiter(this, void 0, void 0, function* () {
         const commits = yield (0, git_1.getRecentCommits)(gitMaxCommitDepth, `https://github.com/${github.context.repo.owner}/${github.context.repo.repo}/commit/`);
-        process({
+        yield process({
             commits: commits,
             pullRequest: {
                 head: (_a = github.context.payload.pull_request) === null || _a === void 0 ? void 0 : _a.head,
@@ -10417,11 +10417,10 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.getRecentCommits = void 0;
 const child_process_1 = __nccwpck_require__(2081);
-const gitLogCmd = (count) => `git log -${count} --pretty=format:'{%n  "commit": "%H",%n  "abbreviated_commit": "%h",%n  "tree": "%T",%n  "abbreviated_tree": "%t",%n  "parent": "%P",%n  "abbreviated_parent": "%p",%n  "refs": "%D",%n  "encoding": "%e",%n  "subject": "%s",%n  "sanitized_subject_line": "%f",%n  "body": "%b",%n  "commit_notes": "%N",%n  "verification_flag": "%G?",%n  "signer": "%GS",%n  "signer_key": "%GK",%n  "author": {%n    "name": "%aN",%n    "email": "%aE",%n    "date": "%aD"%n  },%n  "commiter": {%n    "name": "%cN",%n    "email": "%cE",%n    "date": "%cD"%n  }%n},'`;
+const gitLogCmd = (count) => `git log -${count} --pretty=format:'{%n  "commit": "%H",%n  "abbreviated_commit": "%h",%n  "tree": "%T",%n  "abbreviated_tree": "%t",%n  "parent": "%P",%n  "abbreviated_parent": "%p",%n  "refs": "%D",%n  "encoding": "%e",%n  "subject": "%s",%n  "sanitized_subject_line": "%f",%n  "commit_notes": "%N",%n  "verification_flag": "%G?",%n  "signer": "%GS",%n  "signer_key": "%GK",%n  "author": {%n    "name": "%aN",%n    "email": "%aE",%n    "date": "%aD"%n  },%n  "commiter": {%n    "name": "%cN",%n    "email": "%cE",%n    "date": "%cD"%n  }%n},'`;
 function getRecentCommits(count, urlPrefix) {
     return __awaiter(this, void 0, void 0, function* () {
         const str = `[${(0, child_process_1.execSync)(gitLogCmd(count)).toString().slice(0, -1)}]`;
-        console.log('Get recent commits: ', str);
         const commits = JSON.parse(str);
         return commits.map((commit) => ({
             author: {

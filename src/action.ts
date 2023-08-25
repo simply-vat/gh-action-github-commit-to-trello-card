@@ -30,7 +30,7 @@ const process = processCommitOrPr({
 async function run() {
     const commits = await getRecentCommits(gitMaxCommitDepth, `https://github.com/${github.context.repo.owner}/${github.context.repo.repo}/commit/`)
     
-    process({
+    await process({
         commits: commits,
         pullRequest: {
             head: github.context.payload.pull_request?.head,
