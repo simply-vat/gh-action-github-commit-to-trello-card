@@ -10106,7 +10106,7 @@ const process = (0, commitOrPr_1.default)({
 function run() {
     var _a, _b, _c, _d, _e, _f, _g;
     return __awaiter(this, void 0, void 0, function* () {
-        const commits = yield (0, git_1.getRecentCommits)(gitMaxCommitDepth, `https://github.com/${github.context.repo.owner}/${github.context.repo.repo}/commit/`);
+        const commits = yield (0, git_1.getRecentCommits)(gitMaxCommitDepth, `https://github.com/${github.context.repo.owner}/${github.context.repo.repo}/commit`);
         yield process({
             commits: commits,
             pullRequest: {
