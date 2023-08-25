@@ -2,10 +2,11 @@
   "name": "github-commit-to-trello-card",
   "version": "2.0.0",
   "description": "GitHub Action to attach GitHub commits and pull requests to a Trello card",
-  "main": "dist/index.js",
+  "main": "build/index.js",
   "scripts": {
-    "build": "ncc build src/index.js -o dist",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "compile": "tsc -p .",
+    "build": "ncc build src/action.ts -o build",
+    "test": "mocha -r ts-node/register test/**/*.ts"
   },
   "repository": {
     "type": "git",
@@ -28,6 +29,10 @@
     "axios": "^0.21.4"
   },
   "devDependencies": {
-    "@vercel/ncc": "^0.36.1"
+    "@types/mocha": "^10.0.1",
+    "@vercel/ncc": "^0.36.1",
+    "mocha": "^10.2.0",
+    "ts-node": "^10.9.1",
+    "typescript": "^5.2.2"
   }
 }

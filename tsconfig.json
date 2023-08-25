@@ -1,0 +1,25 @@
+{
+    "$schema": "https://json.schemastore.org/tsconfig",
+    "compilerOptions": {
+        "target": "ES6",
+        "module": "CommonJS",
+        "allowJs": true,
+        "allowSyntheticDefaultImports": true,
+        "forceConsistentCasingInFileNames": true,
+        "moduleResolution": "node",
+        "noFallthroughCasesInSwitch": true,
+        "skipLibCheck": true,
+        "strict": false,
+        "esModuleInterop": true,
+        "declaration": true,
+        "declarationMap": true,
+        "sourceMap": true,
+        "resolveJsonModule": true,
+        "noEmit": false,
+        "incremental": true,
+        "lib": ["es2015", "esnext.asynciterable", "dom"],
+        "outDir": "./dist"
+    },
+    "exclude": ["scripts/**/*", "test/**/*", "dist/**/*", "node_modules"],
+    "include": ["src/**/*"]
+}
