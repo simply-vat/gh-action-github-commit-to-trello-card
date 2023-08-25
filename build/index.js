@@ -10065,14 +10065,23 @@ var __importStar = (this && this.__importStar) || function (mod) {
     __setModuleDefault(result, mod);
     return result;
 };
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
-var _a, _b, _c, _d, _e, _f, _g;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 const commitOrPr_1 = __importDefault(__nccwpck_require__(8889));
 const core = __importStar(__nccwpck_require__(2186));
 const github = __importStar(__nccwpck_require__(5438));
+const git_1 = __nccwpck_require__(6350);
 const regexPullRequest = /Merge pull request \#\d+ from/g;
 const trelloCardIdPattern = core.getInput('trello-card-id-pattern', { required: false }) || '#';
 const trelloApiKey = core.getInput('trello-api-key', { required: true });
@@ -10082,6 +10091,7 @@ const trelloCardAction = core.getInput('trello-card-action', { required: true })
 const trelloListNameCommit = core.getInput('trello-list-name-commit', { required: true });
 const trelloListNamePullRequestOpen = core.getInput('trello-list-name-pr-open', { required: false });
 const trelloListNamePullRequestClosed = core.getInput('trello-list-name-pr-closed', { required: false });
+const gitMaxCommitDepth = parseInt(core.getInput('git-max-commit-depth', { required: false }) || '1');
 const process = (0, commitOrPr_1.default)({
     regexPullRequest,
     trelloCardIdPattern,
@@ -10093,18 +10103,25 @@ const process = (0, commitOrPr_1.default)({
     trelloListNamePullRequestOpen,
     trelloListNamePullRequestClosed
 });
-process({
-    commits: github.context.payload.head_commit ? [github.context.payload.head_commit] : undefined,
-    pullRequest: {
-        head: (_a = github.context.payload.pull_request) === null || _a === void 0 ? void 0 : _a.head,
-        html_url: (_b = github.context.payload.pull_request) === null || _b === void 0 ? void 0 : _b.html_url,
-        number: (_c = github.context.payload.pull_request) === null || _c === void 0 ? void 0 : _c.number,
-        state: (_d = github.context.payload.pull_request) === null || _d === void 0 ? void 0 : _d.state,
-        title: (_e = github.context.payload.pull_request) === null || _e === void 0 ? void 0 : _e.title,
-        url: (_f = github.context.payload.pull_request) === null || _f === void 0 ? void 0 : _f.url,
-        user: (_g = github.context.payload.pull_request) === null || _g === void 0 ? void 0 : _g.user
-    }
-});
+function run() {
+    var _a, _b, _c, _d, _e, _f, _g;
+    return __awaiter(this, void 0, void 0, function* () {
+        const commits = yield (0, git_1.getRecentCommits)(gitMaxCommitDepth, `https://github.com/${github.context.repo.owner}/${github.context.repo.repo}/commit/`);
+        process({
+            commits: commits,
+            pullRequest: {
+                head: (_a = github.context.payload.pull_request) === null || _a === void 0 ? void 0 : _a.head,
+                html_url: (_b = github.context.payload.pull_request) === null || _b === void 0 ? void 0 : _b.html_url,
+                number: (_c = github.context.payload.pull_request) === null || _c === void 0 ? void 0 : _c.number,
+                state: (_d = github.context.payload.pull_request) === null || _d === void 0 ? void 0 : _d.state,
+                title: (_e = github.context.payload.pull_request) === null || _e === void 0 ? void 0 : _e.title,
+                url: (_f = github.context.payload.pull_request) === null || _f === void 0 ? void 0 : _f.url,
+                user: (_g = github.context.payload.pull_request) === null || _g === void 0 ? void 0 : _g.user
+            }
+        });
+    });
+}
+run();
 
 
 /***/ }),
@@ -10383,6 +10400,42 @@ exports["default"] = processCommitOrPr;
 
 /***/ }),
 
+/***/ 6350:
+/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
+
+"use strict";
+
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.getRecentCommits = void 0;
+const child_process_1 = __nccwpck_require__(2081);
+const gitLogCmd = (count) => `git log -${count} --pretty=format:'{%n  "commit": "%H",%n  "abbreviated_commit": "%h",%n  "tree": "%T",%n  "abbreviated_tree": "%t",%n  "parent": "%P",%n  "abbreviated_parent": "%p",%n  "refs": "%D",%n  "encoding": "%e",%n  "subject": "%s",%n  "sanitized_subject_line": "%f",%n  "body": "%b",%n  "commit_notes": "%N",%n  "verification_flag": "%G?",%n  "signer": "%GS",%n  "signer_key": "%GK",%n  "author": {%n    "name": "%aN",%n    "email": "%aE",%n    "date": "%aD"%n  },%n  "commiter": {%n    "name": "%cN",%n    "email": "%cE",%n    "date": "%cD"%n  }%n},'`;
+function getRecentCommits(count, urlPrefix) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const str = `[${(0, child_process_1.execSync)(gitLogCmd(count)).toString().slice(0, -1)}]`;
+        const commits = JSON.parse(str);
+        return commits.map((commit) => ({
+            author: {
+                name: commit.author.name,
+            },
+            message: commit.subject,
+            url: `${urlPrefix}/${commit.commit}`
+        }));
+    });
+}
+exports.getRecentCommits = getRecentCommits;
+
+
+/***/ }),
+
 /***/ 2877:
 /***/ ((module) => {
 
@@ -10396,6 +10449,14 @@ module.exports = eval("require")("encoding");
 
 "use strict";
 module.exports = require("assert");
+
+/***/ }),
+
+/***/ 2081:
+/***/ ((module) => {
+
+"use strict";
+module.exports = require("child_process");
 
 /***/ }),
 
