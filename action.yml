@@ -30,6 +30,10 @@ inputs:
     description: Custom pattern to extract Trello card ID
     default: "#"
     required: false
+  git-max-commit-depth:
+    description: Maximum number of commits to process
+    default: '5'
+    required: false
 runs:
   using: node16
   main: build/index.js
