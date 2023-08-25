@@ -31,7 +31,7 @@ async function run() {
     const commits = await getRecentCommits(gitMaxCommitDepth, `https://github.com/${github.context.repo.owner}/${github.context.repo.repo}/commit`)
     
     await process({
-        commits: commits,
+        commits: commits.reverse(), //Reverse to get the oldest commit first
         pullRequest: {
             head: github.context.payload.pull_request?.head,
             html_url: github.context.payload.pull_request?.html_url,
