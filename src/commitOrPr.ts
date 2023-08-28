@@ -248,7 +248,9 @@ export default function processCommitOrPr(options: Options) {
 
         if (commits && commits.length) {
             await handleCommits(commits);
-        } else if (pullRequest && pullRequest.title) {
+        }
+        
+        if (pullRequest && pullRequest.title) {
             await handlePullRequest(pullRequest);
         }
     }

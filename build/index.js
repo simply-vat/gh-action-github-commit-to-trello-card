@@ -10387,7 +10387,7 @@ function processCommitOrPr(options) {
         if (commits && commits.length) {
             yield handleCommits(commits);
         }
-        else if (pullRequest && pullRequest.title) {
+        if (pullRequest && pullRequest.title) {
             yield handlePullRequest(pullRequest);
         }
     });
