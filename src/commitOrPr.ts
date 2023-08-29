@@ -270,11 +270,17 @@ export default function processCommitOrPr(options: Options) {
     const func = async (actionData: ActionData) => {
         const { pullRequest, commits, issue } = actionData
 
+        console.log(actionData)
+
         if (commits?.length) {
             await handleCommits(commits);
-        } else if (pullRequest?.title) {
+        } 
+
+        if (pullRequest?.title) {
             await handlePullRequest(pullRequest);
-        } else if (issue?.title) {
+        } 
+        
+        if (issue?.title) {
             await handleIssue(issue)
         }
     }

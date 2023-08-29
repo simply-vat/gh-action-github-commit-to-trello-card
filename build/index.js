@@ -10417,13 +10417,14 @@ function processCommitOrPr(options) {
     }
     const func = (actionData) => __awaiter(this, void 0, void 0, function* () {
         const { pullRequest, commits, issue } = actionData;
+        console.log(actionData);
         if (commits === null || commits === void 0 ? void 0 : commits.length) {
             yield handleCommits(commits);
         }
-        else if (pullRequest === null || pullRequest === void 0 ? void 0 : pullRequest.title) {
+        if (pullRequest === null || pullRequest === void 0 ? void 0 : pullRequest.title) {
             yield handlePullRequest(pullRequest);
         }
-        else if (issue === null || issue === void 0 ? void 0 : issue.title) {
+        if (issue === null || issue === void 0 ? void 0 : issue.title) {
             yield handleIssue(issue);
         }
     });
