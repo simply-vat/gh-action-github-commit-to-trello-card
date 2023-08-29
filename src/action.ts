@@ -29,7 +29,8 @@ const process = processCommitOrPr({
 
 async function run() {
     const commits = await getRecentCommits(gitMaxCommitDepth, `https://github.com/${github.context.repo.owner}/${github.context.repo.repo}/commit`)
-    
+
+
     await process({
         commits: commits.reverse(), //Reverse to get the oldest commit first
         pullRequest: {
@@ -40,6 +41,14 @@ async function run() {
             title: github.context.payload.pull_request?.title,
             url: github.context.payload.pull_request?.url,
             user: github.context.payload.pull_request?.user
+        },
+        issue: {
+            html_url: github.context.payload.issue?.html_url,
+            number: github.context.payload.issue?.number,
+            state: github.context.payload.issue?.state,
+            title: github.context.payload.issue?.title,
+            url: github.context.payload.issue?.url,
+            user: github.context.payload.issue?.user
         }
     })
 }

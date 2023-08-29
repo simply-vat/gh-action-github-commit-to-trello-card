@@ -10104,7 +10104,7 @@ const process = (0, commitOrPr_1.default)({
     trelloListNamePullRequestClosed
 });
 function run() {
-    var _a, _b, _c, _d, _e, _f, _g;
+    var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o;
     return __awaiter(this, void 0, void 0, function* () {
         const commits = yield (0, git_1.getRecentCommits)(gitMaxCommitDepth, `https://github.com/${github.context.repo.owner}/${github.context.repo.repo}/commit`);
         yield process({
@@ -10117,6 +10117,14 @@ function run() {
                 title: (_e = github.context.payload.pull_request) === null || _e === void 0 ? void 0 : _e.title,
                 url: (_f = github.context.payload.pull_request) === null || _f === void 0 ? void 0 : _f.url,
                 user: (_g = github.context.payload.pull_request) === null || _g === void 0 ? void 0 : _g.user
+            },
+            issue: {
+                html_url: (_h = github.context.payload.issue) === null || _h === void 0 ? void 0 : _h.html_url,
+                number: (_j = github.context.payload.issue) === null || _j === void 0 ? void 0 : _j.number,
+                state: (_k = github.context.payload.issue) === null || _k === void 0 ? void 0 : _k.state,
+                title: (_l = github.context.payload.issue) === null || _l === void 0 ? void 0 : _l.title,
+                url: (_m = github.context.payload.issue) === null || _m === void 0 ? void 0 : _m.url,
+                user: (_o = github.context.payload.issue) === null || _o === void 0 ? void 0 : _o.user
             }
         });
     });
@@ -10382,13 +10390,41 @@ function processCommitOrPr(options) {
             }
         });
     }
+    function handleIssue(data) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const url = data.html_url || data.url;
+            const message = data.title;
+            const user = data.user.name;
+            const cardsNumbers = getAllCardNumbers(message);
+            for (const cardNumber of cardsNumbers) {
+                const card = yield getCardOnBoard(trelloBoardId, cardNumber);
+                if (card && card.length > 0) {
+                    if (trelloCardAction && trelloCardAction.toLowerCase() === 'attachment') {
+                        yield addAttachmentToCard(card, url);
+                    }
+                    else if (trelloCardAction && trelloCardAction.toLowerCase() === 'comment') {
+                        yield addCommentToCard(card, user, message, url);
+                    }
+                    if (data.state === "open" && trelloListNamePullRequestOpen && trelloListNamePullRequestOpen.length > 0) {
+                        yield moveCardToList(trelloBoardId, card, trelloListNamePullRequestOpen);
+                    }
+                    else if (data.state === "closed" && trelloListNamePullRequestClosed && trelloListNamePullRequestClosed.length > 0) {
+                        yield moveCardToList(trelloBoardId, card, trelloListNamePullRequestClosed);
+                    }
+                }
+            }
+        });
+    }
     const func = (actionData) => __awaiter(this, void 0, void 0, function* () {
-        const { pullRequest, commits } = actionData;
-        if (commits && commits.length) {
+        const { pullRequest, commits, issue } = actionData;
+        if (commits === null || commits === void 0 ? void 0 : commits.length) {
             yield handleCommits(commits);
         }
-        else if (pullRequest && pullRequest.title) {
+        else if (pullRequest === null || pullRequest === void 0 ? void 0 : pullRequest.title) {
             yield handlePullRequest(pullRequest);
+        }
+        else if (issue === null || issue === void 0 ? void 0 : issue.title) {
+            yield handleIssue(issue);
         }
     });
     func.getCardAttachments = getCardAttachments;

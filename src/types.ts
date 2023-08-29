@@ -60,7 +60,7 @@ type PullRequest = {
     head: {
         ref: string;
     };
-    state: string;
+    state: 'open' | 'closed'
 }
 
 type CardAction = 'attachment' | 'comment' | 'moveCardToBoard'
@@ -77,9 +77,21 @@ type Options = {
     trelloListNamePullRequestClosed: string;
 }
 
+type Issue = {
+    number: number
+    title: string
+    url: string;
+    html_url: string
+    user: {
+        name: string;
+    };
+    state: 'open' | 'closed'
+}
+
 type ActionData = {
     pullRequest?: PullRequest
     commits?: Commit[]
+    issue?: Issue
 }
 
 export {
@@ -92,5 +104,6 @@ export {
     PullRequest,
     CardAction,
     Options,
+    Issue,
     ActionData
 }

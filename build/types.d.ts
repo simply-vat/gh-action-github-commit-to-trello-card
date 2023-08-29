@@ -54,7 +54,7 @@ type PullRequest = {
     head: {
         ref: string;
     };
-    state: string;
+    state: 'open' | 'closed';
 };
 type CardAction = 'attachment' | 'comment' | 'moveCardToBoard';
 type Options = {
@@ -68,8 +68,19 @@ type Options = {
     trelloListNamePullRequestOpen: string;
     trelloListNamePullRequestClosed: string;
 };
+type Issue = {
+    number: number;
+    title: string;
+    url: string;
+    html_url: string;
+    user: {
+        name: string;
+    };
+    state: 'open' | 'closed';
+};
 type ActionData = {
     pullRequest?: PullRequest;
     commits?: Commit[];
+    issue?: Issue;
 };
-export { Card, List, Author, Commit, TrelloCardAttachment, TrelloCardComment, PullRequest, CardAction, Options, ActionData };
+export { Card, List, Author, Commit, TrelloCardAttachment, TrelloCardComment, PullRequest, CardAction, Options, Issue, ActionData };

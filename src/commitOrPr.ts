@@ -1,6 +1,6 @@
 import axios from 'axios';
 import type { context } from '@actions/github'
-import { Options, Card, Commit, List, PullRequest, TrelloCardAttachment, TrelloCardComment, ActionData } from './types';
+import { Options, Card, Commit, List, PullRequest, TrelloCardAttachment, TrelloCardComment, ActionData, Issue } from './types';
 
 process.env.VERBOSE ||= 'true'
 
@@ -21,12 +21,12 @@ export default function processCommitOrPr(options: Options) {
         trelloListNamePullRequestClosed
     } = options;
 
-    function getCardNumbers(message: string): string[] {
+    function getCardNumbers(message?: string): string[] {
         const ids = message && message.length > 0 ? message.replace(regexPullRequest, "").match(new RegExp(`${trelloCardIdPattern}\\d+`, 'g')) : [];
         return ids && ids.length > 0 ? ids.map(x => x.replace(trelloCardIdPattern, '')) : [];
     }
 
-    function getAllCardNumbers(message: string, branch: string): Set<string> {
+    function getAllCardNumbers(message: string, branch?: string): Set<string> {
         const cardBranch = getCardNumbers(message);
         const cardMessage = getCardNumbers(branch);
         if (!cardBranch || !cardMessage) {
@@ -243,13 +243,39 @@ export default function processCommitOrPr(options: Options) {
         }
     }
 
-    const func = async (actionData: ActionData) => {
-        const { pullRequest, commits } = actionData
+    async function handleIssue(data: Issue): Promise<void> {
+        const url = data.html_url || data.url;
+        const message = data.title;
+        const user = data.user.name;
+        const cardsNumbers = getAllCardNumbers(message);
 
-        if (commits && commits.length) {
+        for (const cardNumber of cardsNumbers) {
+            const card = await getCardOnBoard(trelloBoardId, cardNumber);
+            if (card && card.length > 0) {
+                if (trelloCardAction && trelloCardAction.toLowerCase() === 'attachment') {
+                    await addAttachmentToCard(card, url);
+                } else if (trelloCardAction && trelloCardAction.toLowerCase() === 'comment') {
+                    await addCommentToCard(card, user, message, url);
+                }
+
+                if (data.state === "open" && trelloListNamePullRequestOpen && trelloListNamePullRequestOpen.length > 0) {
+                    await moveCardToList(trelloBoardId, card, trelloListNamePullRequestOpen);
+                } else if (data.state === "closed" && trelloListNamePullRequestClosed && trelloListNamePullRequestClosed.length > 0) {
+                    await moveCardToList(trelloBoardId, card, trelloListNamePullRequestClosed);
+                }
+            }
+        }
+    }
+
+    const func = async (actionData: ActionData) => {
+        const { pullRequest, commits, issue } = actionData
+
+        if (commits?.length) {
             await handleCommits(commits);
-        } else if (pullRequest && pullRequest.title) {
+        } else if (pullRequest?.title) {
             await handlePullRequest(pullRequest);
+        } else if (issue?.title) {
+            await handleIssue(issue)
         }
     }
 
