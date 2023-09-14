@@ -14871,33 +14871,8 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.getRecentCommits = void 0;
 const simple_git_1 = __importDefault(__nccwpck_require__(9103));
 const git = (0, simple_git_1.default)();
-const gitLogCmd = (count) => `git log -${count} --pretty=format:'{%n  "commit": "%H",%n  "abbreviated_commit": "%h",%n  "tree": "%T",%n  "abbreviated_tree": "%t",%n  "parent": "%P",%n  "abbreviated_parent": "%p",%n  "refs": "%D",%n  "encoding": "%e",%n  "subject": "%s",%n  "sanitized_subject_line": "%f",%n  "commit_notes": "%N",%n  "verification_flag": "%G?",%n  "signer": "%GS",%n  "signer_key": "%GK",%n  "author": {%n    "name": "%aN",%n    "email": "%aE",%n    "date": "%aD"%n  },%n  "commiter": {%n    "name": "%cN",%n    "email": "%cE",%n    "date": "%cD"%n  }%n},'`;
 function getRecentCommits(count, urlPrefix) {
     return __awaiter(this, void 0, void 0, function* () {
-        /*const str = `[${execSync(gitLogCmd(count)).toString().slice(0, -1)}]`
-    
-        const commits = JSON.parse(str) as {
-            commit: string
-            abbreviated_commit: string
-            tree: string
-            abbreviated_tree: string
-            parent: string
-            abbreviated_parent: string
-            refs: string
-            encoding: string
-            subject: string
-            sanitized_subject_line: string
-            body: string
-            commit_notes: string
-            verification_flag: string
-            signer: string
-            signer_key: string
-            author: {
-                name: string
-                email: string
-                date: string
-            }
-        }[]*/
         const commits = yield git.log({
             maxCount: count,
         });
