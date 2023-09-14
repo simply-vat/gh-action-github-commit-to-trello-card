@@ -26,7 +26,8 @@
   "dependencies": {
     "@actions/core": "^1.2.7",
     "@actions/github": "^4.0.0",
-    "axios": "^0.21.4"
+    "axios": "^0.21.4",
+    "simple-git": "^3.19.1"
   },
   "devDependencies": {
     "@types/mocha": "^10.0.1",
